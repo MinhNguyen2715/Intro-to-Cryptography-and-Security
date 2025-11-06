@@ -40,48 +40,45 @@ def mod_exp(a,b,n):
         r = (r*a) % n
     return r
 
-# def mod_exp2(a, b, n):
-#     result = 1
-#     a %= n
-#     while b > 0:
-#         if b & 1: # bitwise AND for LSB
-#             result = (result * a) % n
-#         a = (a * a) % n
-#         b >>= 1
-#     return result
-#
-# def mod_exp3(a, b, n):
-#     result = 1
-#     a %= n
-#     for i in range(b.bit_length(),-1,-1):
-#         result = (result*result) % n
-#         if (b >> i) & 1:
-#             result = (result * a) % n
-#     return result
+def mod_exp2(a, b, n):
+    result = 1
+    a %= n
+    while b > 0:
+        if b & 1: # bitwise AND for LSB
+            result = (result * a) % n
+        a = (a * a) % n
+        b >>= 1
+    return result
+
+def mod_exp3(a, b, n):
+    result = 1
+    a %= n
+    for i in range(b.bit_length(),-1,-1):
+        result = (result*result) % n
+        if (b >> i) & 1:
+            result = (result * a) % n
+    return result
 
 if __name__ == "__main__":
     # EEA
-    # first = 5
-    # second = 12
-    # d, x, y, res = extended_euclid(first, second)
-    #
-    # df = pd.DataFrame(res, columns=["a", "b", "a//b", "d", "x", "y"])
-    # print(df)
-    #
-    # # Modular inverse
-    # a = 340282366920938463463374607431768211457
-    # n = 6277101735386680763835789423207666416102355444464034512896
-    # print(mod_inv(a,n))
-    #
-    # # Modular exponential
-    # a = 340282366920938463463374607431768211457
-    # b = (1 << 2048) + (1 << 1024) + 65537 # = 2^2048 + 2^1024 + 65537
-    # n = 6277101735386680763835789423207666416102355444464034512896
-    #
-    # # (a,b,n) = int(input())
-    #
-    # print(mod_exp(a, b, n))
-    # # Checking
-    # # print(pow(a, b, n))
+    first = 5
+    second = 12
+    d, x, y, res = extended_euclid(first, second)
 
-    print(mod_exp(5,54,151))
+    df = pd.DataFrame(res, columns=["a", "b", "a//b", "d", "x", "y"])
+    print(df)
+
+    # Modular inverse
+    a = 340282366920938463463374607431768211457
+    n = 6277101735386680763835789423207666416102355444464034512896
+    print(mod_inv(a,n))
+
+    # Modular exponential
+    a = 340282366920938463463374607431768211457
+    b = (1 << 2048) + (1 << 1024) + 65537 # = 2^2048 + 2^1024 + 65537
+    n = 6277101735386680763835789423207666416102355444464034512896
+
+    print(mod_exp(a, b, n))
+    # Checking
+    print(pow(a, b, n))
+
