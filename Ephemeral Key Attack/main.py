@@ -1,33 +1,44 @@
-import numpy as np
+import math
+
 def read_json_data(data: dict):
     """Read data from JSON format"""
-    res = []
-    for key, value in data.items():
-        res.append(value)
-    p,q,g,y,sig1,sig2 = res
-    return p,q,g,y,sig1,sig2
+    p = data["p"]
+    q = data["q"]
+    g = data["g"]
+    y = data["y"]
+    sig1 = data["sig1"]
+    sig2 = data["sig2"]
+    return p, q, g, y, sig1, sig2
 
 def recover_private_key(data: dict):
     """Solve system of linear equation to get d"""
-    p, q, g, y, sig1, sig2 = read_json_data(data)
+    _, q, _, _, sig1, sig2 = read_json_data(data)
 
-    x1, r1, s1 = sig1.values()
-    x2, r2, s2 = sig2.values()
+    x1 = sig1["x"]
+    r1 = sig1["r"]
+    s1 = sig1["s"]
 
-    a = np.matrix([[s1, r1], [s2, r2]])
-    b = np.matrix([[x1],[x2-s2]])
+    x2 = sig2["x"]
+    r2 = sig2["r"]
+    s2 = sig2["s"]
 
-    det = int(a[0, 0] * a[1, 1] - a[0, 1] * a[1, 0]) % q
+    det = (s1 * r2 - s2 * r1) % q
+    if math.gcd(det, q) != 1:
+        raise ValueError("")
     det_inv = pow(det, -1, q)
 
-    a_adj = np.array([
-        [a[1, 1], -a[0, 1]],
-        [-a[1, 0], a[0, 0]]
-    ]) % q
+    # Cramer's system: Ax = B, x = [k ,d]
+    # RHS
+    b1 = x1
+    b2 = (x2 - s2) % q
 
-    d = det_inv * a_adj.dot(b) % q
-    d.flatten()
-    return d[1].item()
+    # det of A_d
+    d_num = (s1 * b2 - s2 * b1) % q
+
+    # d = det_A_d * (det_A)^-1
+    d = (det_inv * d_num) % q
+
+    return d
 
 if __name__ == "__main__":
     # Level 1: Small number
