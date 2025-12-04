@@ -21,10 +21,18 @@ def recover_private_key(data: dict):
     x2 = sig2["x"]
     r2 = sig2["r"]
     s2 = sig2["s"]
+    """
+    s1*k1 + r1*d = x1
+    s2*k1 + r2*d = x2 - s2
+    (k_2 = k_1 + 1)
+    
+    --> [k, d] = A^-1 * B
+    """
 
+    # Determinant
     det = (s1 * r2 - s2 * r1) % q
     if math.gcd(det, q) != 1:
-        raise ValueError("")
+        raise ValueError("No inverse of det")
     det_inv = pow(det, -1, q)
 
     # Cramer's system: Ax = B, x = [k ,d]
@@ -37,6 +45,35 @@ def recover_private_key(data: dict):
 
     # d = det_A_d * (det_A)^-1
     d = (det_inv * d_num) % q
+
+    return d
+
+def recover_private_key_2(data: dict):
+    """Solve system of linear equation to get d"""
+    _, q, _, _, sig1, sig2 = read_json_data(data)
+
+    x1 = sig1["x"]
+    r1 = sig1["r"]
+    s1 = sig1["s"]
+
+    x2 = sig2["x"]
+    r2 = sig2["r"]
+    s2 = sig2["s"]
+    """
+    s1*k1 + r1*d = x1
+    s2*k1 + r2*d = x2 - s2
+    (k_2 = k_1 + 1)
+    """
+
+    b1 = s2 * r1
+    b2 = s1 * r2
+    b = b1 - b2
+
+    c1 = x1 * s2
+    c2 = (x2 - s2) * s1
+    c = c1 - c2
+
+    d = (c*(pow(b,-1,q))) % q
 
     return d
 
@@ -59,8 +96,10 @@ if __name__ == "__main__":
             "s": 133
         }
     }
-    test = recover_private_key(test_data)
-    print("Test result: ",test)
+    test1 = recover_private_key(test_data)
+    test2 = recover_private_key_2(test_data)
+    print("Test result: ",test1)
+    print("Test result: ", test2)
 
     # Level 2: Big number
     big_data = {
@@ -79,8 +118,10 @@ if __name__ == "__main__":
              "s": 10622307882903918298403370294837054194996446050344436880766181995133143646783877563956424755967519418900317082840363586379948106787342394514047484044936934
         }
     }
-    result = recover_private_key(big_data)
-    print("Result: ", result)
+    test1 = recover_private_key(big_data)
+    test2 = recover_private_key_2(big_data)
+    print("Result: ", test1)
+    print("Result: ", test2)
 
 
 
