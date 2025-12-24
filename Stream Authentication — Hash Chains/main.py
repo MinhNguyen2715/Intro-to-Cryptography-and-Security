@@ -44,7 +44,6 @@ def verify_stream(blocks, trusted_h0):
                 return False
             expected = next_hash
 
-
         else: # last block
             data = block
             data = bytes.fromhex(data)
@@ -67,7 +66,8 @@ if __name__ == "__main__":
     ]
 
     root_hash = compute_root_hash(blocks_hex)
-    print("Root hash is:",root_hash)
+    print("Root hash:",root_hash)
+    print("Checking: ","7efaf53af572f7680607a3ac24b441ad3966784e50dda32613405a0847a0433e")
 
     # Testcase 2:
     # Stream Data (Data received by the Client)
